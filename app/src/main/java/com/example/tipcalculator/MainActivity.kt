@@ -5,6 +5,7 @@ package com.example.tipcalculator
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -59,8 +60,12 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun TipCalculatorApp(modifier: Modifier = Modifier) {
     var amountInput by remember { mutableStateOf("") }
+    var percentInput by remember {
+        mutableStateOf("")
+    }
     val amount = amountInput.toDoubleOrNull() ?: 0.0
-    val tip = calculateTip(amount)
+    val percent = percentInput.toDoubleOrNull() ?: 0.0
+    val tip = calculateTip(amount, percent)
 
     Column(
         modifier = modifier
@@ -73,16 +78,22 @@ fun TipCalculatorApp(modifier: Modifier = Modifier) {
     ) {
         Text(
             text = stringResource(id = R.string.calculate_tip),
-            modifier = Modifier
-                .padding(bottom = 16.dp, top = 40.dp)
+            modifier = Modifier.padding(bottom = 16.dp, top = 40.dp)
         )
         EditNumberField(
+            label = R.string.bill_amount,
             modifier = Modifier
                 .padding(bottom = 32.dp)
                 .fillMaxSize(),
             value = amountInput,
-            onValueChange = { amountInput = it }
-        )
+            onValueChange = { amountInput = it })
+        EditNumberField(
+            label = R.string.how_was_the_service,
+            modifier = Modifier
+                .padding(bottom = 32.dp)
+                .fillMaxSize(),
+            value = percentInput,
+            onValueChange = { percentInput = it })
         Text(
             text = stringResource(id = R.string.tip_amount, tip),
             style = MaterialTheme.typography.displaySmall
@@ -98,6 +109,7 @@ private fun calculateTip(amount: Double, tipPercent: Double = 15.0): String {
 
 @Composable
 fun EditNumberField(
+    @StringRes label: Int,
     modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit
@@ -106,7 +118,7 @@ fun EditNumberField(
         modifier = modifier,
         value = value,
         onValueChange = onValueChange,
-        label = { Text(stringResource(id = R.string.bill_amount)) },
+        label = { Text(stringResource(id = label)) },
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
     )
